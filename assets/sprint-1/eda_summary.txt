@@ -1,0 +1,16 @@
+
+EcoShield AI - Sprint 1 EDA Summary
+
+Dataset shape: (284807, 31)
+Normal transactions: 284315
+Fraud transactions: 492
+Fraud ratio: 0.1727%
+Missing value columns: 0
+Duplicate rows: 1081
+Imbalance ratio: 577.88
+
+Initial observations:
+- Dataset is highly imbalanced.
+- Accuracy alone is not sufficient for model evaluation.
+- Recall, precision, F1-score, ROC-AUC and PR-AUC should be used.
+- Class imbalance techniques such as class_weight, SMOTE and threshold tuning should be tested in later sprints.

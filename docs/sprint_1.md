@@ -2,21 +2,25 @@
 
 ## Sprint Amacı
 
-Bu sprintte EcoShield AI projesinin temel kapsamını belirlemek, veri setini seçmek, ilk veri analizlerini yapmak ve baseline fraud detection modeli için altyapı oluşturmak hedeflenmiştir.
+Bu sprintte EcoShield AI projesinin temel kapsamını belirlemek, veri setini seçmek, ilk veri analizlerini yapmak ve fraud detection problemi için sağlam bir başlangıç altyapısı oluşturmak hedeflenmiştir.
 
 Sprint 1’in ana odağı:
 
 - Proje fikrinin netleşmesi
 - Veri setinin seçilmesi
+- Repo ve dokümantasyon düzeninin oluşturulması
 - EDA yapılması
 - Fraud / normal işlem dağılımının analiz edilmesi
 - Class imbalance probleminin tespit edilmesi
-- Baseline modelleme altyapısının hazırlanması
-- Sprint board ve dokümantasyon düzeninin oluşturulması
+- Sprint board ve ürün durumu çıktılarının hazırlanması
+
+Bu sprintte model eğitimi yapılmamıştır. Train/test split, baseline modelleme, model metrikleri ve iki aşamalı mimari Sprint 2 kapsamına bırakılmıştır.
 
 ---
 
 ## Sprint 1 Backlog
+
+Bu sprintte Product Backlog içerisinden proje fikrinin netleştirilmesi, veri setinin seçilmesi, repo/dokümantasyon düzeninin kurulması ve ilk EDA çalışmalarının yapılması hedeflenmiştir.
 
 | No | Sprint Task | Sorumlu | Durum |
 |---|---|---|---|
@@ -26,13 +30,13 @@ Sprint 1’in ana odağı:
 | SB-4 | Kullanılacak veri setlerinin araştırılması | Tüm ekip | Tamamlandı |
 | SB-5 | Credit Card Fraud Detection veri setinin seçilmesi | Tüm ekip | Tamamlandı |
 | SB-6 | Veri setinin `data/raw` klasörüne eklenmesi | Developer | Tamamlandı |
-| SB-7 | EDA notebook dosyasının oluşturulması | Developer | Planlandı |
-| SB-8 | Veri setinin satır/sütun yapısının incelenmesi | Developer | Planlandı |
-| SB-9 | Fraud / normal işlem dağılımının analiz edilmesi | Developer | Planlandı |
-| SB-10 | Eksik değer ve duplicate kontrolü yapılması | Developer | Planlandı |
-| SB-11 | Class distribution grafiğinin oluşturulması | Developer | Planlandı |
-| SB-12 | Train/test split hazırlığının yapılması | Developer | Planlandı |
-| SB-13 | Baseline Logistic Regression modeli için notebook hazırlanması | Developer | Planlandı |
+| SB-7 | EDA notebook dosyasının oluşturulması | Developer | Tamamlandı |
+| SB-8 | Veri setinin satır/sütun yapısının incelenmesi | Developer | Tamamlandı |
+| SB-9 | Fraud / normal işlem dağılımının analiz edilmesi | Developer | Tamamlandı |
+| SB-10 | Eksik değer ve duplicate kontrolü yapılması | Developer | Tamamlandı |
+| SB-11 | Class distribution grafiğinin oluşturulması | Developer | Tamamlandı |
+| SB-12 | Amount ve Time değişkenlerinin temel dağılım analizinin yapılması | Developer | Tamamlandı |
+| SB-13 | EDA çıktılarının `assets/sprint-1` klasörüne kaydedilmesi | Developer | Tamamlandı |
 | SB-14 | Sprint board ekran görüntüsünün eklenmesi | Scrum Master | Planlandı |
 | SB-15 | Ürün durumu ekran görüntülerinin eklenmesi | Tüm ekip | Planlandı |
 
@@ -42,7 +46,7 @@ Sprint 1’in ana odağı:
 
 Sprint 1’de ürünün temel teknik altyapısını oluşturacak görevler seçilmiştir.
 
-Bu sprintte öncelik, final dashboard’u veya gelişmiş modeli tamamlamak değil; veri setini anlamak, fraud detection problemini doğru tanımlamak ve baseline modelleme için temel hazırlamaktır.
+Bu sprintte öncelik, final dashboard’u veya gelişmiş modeli tamamlamak değil; veri setini anlamak, fraud detection problemini doğru tanımlamak ve modelleme öncesi veri analizini tamamlamaktır.
 
 Bu nedenle Sprint 1’de şu işlere öncelik verilmiştir:
 
@@ -51,9 +55,9 @@ Bu nedenle Sprint 1’de şu işlere öncelik verilmiştir:
 - EDA notebook’unun hazırlanması
 - Fraud / normal işlem dağılımının incelenmesi
 - Class imbalance probleminin ortaya konması
-- Baseline modelleme için hazırlık yapılması
+- EDA çıktılarının görsel ve metinsel olarak kaydedilmesi
 
-Bu seçimlerin nedeni, Sprint 2’de geliştirilecek SMOTE / class weight / threshold tuning ve iki aşamalı model mimarisinin sağlam bir veri analizi üzerine kurulmasıdır.
+Bu seçimlerin nedeni, Sprint 1’de doğrudan model geliştirmeye geçmeden önce veri setinin yapısını anlamak ve fraud detection probleminin temel karakterini ortaya koymaktır. EDA sonucunda veri setindeki class imbalance problemi netleştirilecek, bu çıktı Sprint 2’de yapılacak train/test split, baseline modelleme, SMOTE / class weight ve threshold tuning çalışmaları için temel oluşturacaktır.
 
 ---
 
@@ -68,6 +72,20 @@ In Progress
 Review
 Done
 ```
+
+Sprint board üzerinde görevler bu kolonlar arasında ilerletilecektir. Her görev başlangıçta Backlog veya To Do kolonunda yer alacak, geliştirme sürecine alındığında In Progress kolonuna taşınacak, kontrol bekleyen işler Review kolonunda tutulacak ve tamamlanan işler Done kolonuna aktarılacaktır.
+
+Sprint board ekran görüntüsü aşağıdaki klasöre eklenecektir:
+
+```text
+assets/sprint-1/sprint_board.png
+```
+
+Sprint board ekran görüntüsü eklendikten sonra aşağıdaki bağlantı aktif hale gelecektir:
+
+![Sprint Board](../assets/sprint-1/sprint_board.png)
+
+---
 
 ## Daily Scrum Notları
 
@@ -140,9 +158,156 @@ Bir sonraki toplantıda görev dağılımı yapılarak veri analizi, modelleme, 
 - İlk veri seti olarak Credit Card Fraud Detection veri setiyle başlanmasına karar verildi.
 - Fraud detection probleminin class imbalance içerdiği ve bu nedenle özel metriklerle değerlendirilmesi gerektiği belirlendi.
 - Sonraki toplantıda görev dağılımı yapılacak.
-- İlk aşamada EDA, baseline model ve proje dokümantasyonu hazırlanacak.
+- İlk aşamada EDA ve proje dokümantasyonu hazırlanacak.
 
 **Blocker / Risk:**
 
 - Fraud detection veri setleri ciddi class imbalance içerdiği için accuracy metriği tek başına yeterli olmayacaktır.
 - Projenin klasik fraud detection projesi gibi görünmemesi için iki aşamalı hafif model + ağır model mimarisi ve compute-saving yaklaşımı özellikle vurgulanacaktır.
+
+---
+
+## Ürün Durumu
+
+Sprint 1 sonunda ürün henüz çalışan bir dashboard veya tamamlanmış modelleme sistemi değildir. Bu sprintte ürünün temel veri analizi ve proje planlama altyapısı oluşturulmuştur.
+
+Bu sprint sonunda elde edilen durum:
+
+- Proje fikri olarak EcoShield AI seçildi.
+- Repo ve dokümantasyon yapısı oluşturuldu.
+- Credit Card Fraud Detection veri seti seçildi.
+- Veri seti projeye eklendi.
+- EDA notebook oluşturuldu.
+- Veri setinin satır/sütun yapısı incelendi.
+- Fraud / normal işlem dağılımı analiz edildi.
+- Eksik değer ve duplicate kontrolü yapıldı.
+- Class imbalance problemi tespit edildi.
+- Class distribution, Amount distribution ve Time distribution grafikleri oluşturuldu.
+- EDA özeti `assets/sprint-1/eda_summary.txt` dosyasına kaydedildi.
+
+Sprint 1 kapsamında oluşturulan teknik çıktılar:
+
+```text
+notebooks/01_eda.ipynb
+assets/sprint-1/class_distribution.png
+assets/sprint-1/amount_distribution.png
+assets/sprint-1/time_distribution.png
+assets/sprint-1/eda_summary.txt
+```
+
+Sprint 1 EDA çıktıları:
+
+![Class Distribution](../assets/sprint-1/class_distribution.png)
+
+![Amount Distribution](../assets/sprint-1/amount_distribution.png)
+
+![Time Distribution](../assets/sprint-1/time_distribution.png)
+
+EDA sonucunda elde edilen temel bulgular:
+
+| Metrik | Değer |
+|---|---:|
+| Veri seti boyutu | 284,807 satır / 31 sütun |
+| Normal işlem sayısı | 284,315 |
+| Fraud işlem sayısı | 492 |
+| Fraud oranı | %0.1727 |
+| Eksik değer bulunan sütun sayısı | 0 |
+| Duplicate satır sayısı | 1,081 |
+| Normal/Fraud oranı | 577.88 |
+
+Bu sprintte model eğitimi yapılmamıştır. Baseline modelleme, train/test split ve performans metrikleri Sprint 2’ye bırakılmıştır.
+
+---
+
+## Sprint Review
+
+Sprint 1 sonunda EcoShield AI projesinin temel kapsamı belirlenmiş ve finansal dolandırıcılık tespiti problemi üzerine çalışılmasına karar verilmiştir. Ekip, farklı proje fikirlerini veri bulunabilirliği, model eğitilebilirliği, ürünleşme potansiyeli ve bootcamp süresinde tamamlanabilirlik açısından değerlendirmiştir.
+
+Yapılan değerlendirmeler sonucunda fraud detection probleminin hem veri açısından erişilebilir hem de modelleme açısından ölçülebilir olduğu görülmüştür. Bu nedenle ilk aşamada Credit Card Fraud Detection veri setiyle başlanmasına karar verilmiştir.
+
+Tamamlanan işler:
+
+- Proje fikri netleştirildi.
+- Hedef problem alanı belirlendi.
+- Product backlog oluşturuldu.
+- Sprint 1 backlog hazırlandı.
+- Repo klasör yapısı oluşturuldu.
+- Dokümantasyon dosyaları hazırlandı.
+- Credit Card Fraud Detection veri seti seçildi.
+- EDA notebook oluşturuldu.
+- Veri setinin temel yapısı incelendi.
+- Fraud / normal işlem dağılımı analiz edildi.
+- Eksik değer ve duplicate kontrolü yapıldı.
+- Class imbalance problemi tespit edildi.
+- EDA çıktıları görsel ve metinsel olarak kaydedildi.
+
+Eksik kalan / sonraki sprinte aktarılan işler:
+
+- Train/test split yapılması
+- Logistic Regression baseline modelinin eğitilmesi
+- Random Forest / LightGBM gibi ikinci model denemeleri
+- Confusion matrix ve model metriklerinin çıkarılması
+- SMOTE ve class weight karşılaştırmaları
+- Threshold tuning
+- İki aşamalı hafif model + ağır model mimarisi
+- Dashboard’un çalışan hale getirilmesi
+- Compute-saving metriğinin hesaplanması
+
+---
+
+## Sprint Retrospective
+
+### İyi Gidenler
+
+- Proje fikri seçilmeden önce farklı temalar ve veri setleri karşılaştırıldığı için daha bilinçli bir proje seçimi yapılabildi.
+- Proje fikri erken aşamada netleştirildi.
+- Veri bulunabilirliği açısından uygulanabilir bir proje seçildi.
+- Fraud detection problemi teknik olarak uygulanabilir bulundu.
+- Repo ve dokümantasyon yapısı oluşturuldu.
+- Product backlog ve sprint backlog hazırlandı.
+- EDA ile veri setinin temel yapısı anlaşılmaya başlandı.
+
+### Zorlayan Noktalar
+
+- Fraud detection probleminin ciddi class imbalance içerdiği görüldü.
+- Accuracy metriğinin bu problem için tek başına yeterli olmayacağı anlaşıldı.
+- Projenin klasik fraud detection gibi görünmemesi için iki aşamalı enerji-verimli mimarinin daha net vurgulanması gerektiği fark edildi.
+- IEEE-CIS Fraud Detection veri setinin daha gerçekçi fakat daha karmaşık olduğu görüldü. Bu nedenle ilk sprintte daha hızlı analiz edilebilir Credit Card Fraud Detection veri setiyle başlanmasına karar verildi.
+
+### Bir Sonraki Sprintte İyileştirilecekler
+
+- EDA sonucunda tespit edilen class imbalance problemi modelleme sürecinde dikkate alınacak.
+- Train/test split işlemi stratified şekilde yapılacak.
+- İlk baseline model olarak Logistic Regression eğitilecek.
+- Accuracy yerine recall, precision, F1-score, ROC-AUC ve PR-AUC metrikleri birlikte değerlendirilecek.
+- Random Forest veya LightGBM ile ikinci bir model denemesi yapılacak.
+- SMOTE, class weight ve threshold tuning yöntemleri Sprint 2 kapsamında test edilecek.
+- Model çıktıları dashboard’da gösterilebilecek hale getirilecek.
+- Sprint board ekran görüntüsü ve ürün durumu görselleri repo’ya eklenecek.
+
+---
+
+## Sprint 1 Teknik Minimum Hedefler
+
+Sprint 1 sonunda teknik olarak şu çıktıların oluşturulması hedeflenmiştir:
+
+1. Veri seti seçildi.
+2. EDA notebook oluşturuldu.
+3. Veri setinin satır/sütun yapısı incelendi.
+4. Fraud / normal işlem dağılımı gösterildi.
+5. Eksik değer kontrolü yapıldı.
+6. Duplicate kontrolü yapıldı.
+7. Class distribution grafiği oluşturuldu.
+8. Amount distribution grafiği oluşturuldu.
+9. Time distribution grafiği oluşturuldu.
+10. EDA özeti oluşturuldu.
+
+Modelleme, train/test split ve performans metrikleri Sprint 2 kapsamına aktarılmıştır.
+
+---
+
+## Sprint 1 Sonuç Özeti
+
+Sprint 1 kapsamında EcoShield AI projesinin temel yönü belirlenmiş, kullanılacak veri seti seçilmiş ve fraud detection probleminin teknik olarak uygulanabilir olduğu görülmüştür.
+
+İlk sprintte özellikle veri analizi, class imbalance probleminin anlaşılması ve modelleme için gerekli veri altyapısının kurulması hedeflenmiştir. Bu sprintte elde edilen çıktılar, Sprint 2’de geliştirilecek train/test split, baseline modelleme, SMOTE / class weight denemeleri, threshold tuning ve iki aşamalı model mimarisi için temel oluşturacaktır.
