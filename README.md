@@ -412,6 +412,10 @@ Modelleme, train/test split ve performans metrikleri Sprint 2 kapsamına aktarı
 
 ## Sprint 1 Sonuç Özeti
 
-Sprint 1 kapsamında EcoShield AI projesinin temel yönü belirlenmiş, kullanılacak veri seti seçilmiş ve fraud detection probleminin teknik olarak uygulanabilir olduğu görülmüştür.
+## Sprint 1 Sonuç Özeti
 
-İlk sprintte özellikle veri analizi, class imbalance probleminin anlaşılması ve modelleme için gerekli veri altyapısının kurulması hedeflenmiştir. Bu sprintte elde edilen çıktılar, Sprint 2’de geliştirilecek train/test split, baseline modelleme, SMOTE / class weight denemeleri, threshold tuning ve iki aşamalı model mimarisi için temel oluşturacaktır.
+Sprint 1 kapsamında EcoShield AI projesinin temel yönü belirlenmiş ve finansal dolandırıcılık tespiti problemi üzerine ilerlenmesine karar verilmiştir. Bu sprintte, fraud detection probleminin veri yapısını hızlıca anlamak ve class imbalance durumunu net şekilde gözlemlemek amacıyla Credit Card Fraud Detection veri seti üzerinden ilk EDA çalışması yapılmıştır.
+
+Credit Card Fraud Detection veri seti Sprint 1’de problem doğrulama ve hızlı EDA için kullanılmıştır. Ancak projenin sonraki aşamalarında daha gerçekçi, daha kapsamlı ve daha fazla değişken içeren IEEE-CIS Fraud Detection veri seti de denenecektir. Sprint 2’de IEEE-CIS veri setinin `train_transaction` ve `train_identity` dosyaları incelenerek preprocessing, eksik değer yönetimi, kategorik değişken dönüşümü ve modelleme sürecine uygunluğu değerlendirilecektir.
+
+Bu sprintte elde edilen çıktılar, Sprint 2’de geliştirilecek train/test split, baseline modelleme, class imbalance yöntemleri, threshold tuning ve iki aşamalı hafif model + ağır model mimarisi için temel oluşturacaktır.
