@@ -187,7 +187,7 @@ assets/sprint-1/sprint_board.png
 
 Sprint board ekran görüntüsü eklendikten sonra aşağıdaki bağlantı aktif hale gelecektir:
 
-![Sprint Board](../assets/sprint-1/sprint_board.png)
+![Sprint Board](/assets/sprint-1/sprint_board.png)
 
 ---
 
@@ -301,11 +301,11 @@ assets/sprint-1/eda_summary.txt
 
 Sprint 1 EDA çıktıları:
 
-![Class Distribution](../assets/sprint-1/class_distribution.png)
+![Class Distribution](/assets/sprint-1/class_distribution.png)
 
-![Amount Distribution](../assets/sprint-1/amount_distribution.png)
+![Amount Distribution](/assets/sprint-1/amount_distribution.png)
 
-![Time Distribution](../assets/sprint-1/time_distribution.png)
+![Time Distribution](/assets/sprint-1/time_distribution.png)
 
 EDA sonucunda elde edilen temel bulgular:
 
