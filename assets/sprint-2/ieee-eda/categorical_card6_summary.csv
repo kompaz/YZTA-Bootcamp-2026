@@ -1,0 +1,6 @@
+feature,card6,transaction_count,fraud_count,fraud_rate
+card6,debit,439938,10674,0.024262509717278342
+card6,credit,148986,9950,0.06678479857167788
+card6,__MISSING__,1571,39,0.024824952259707194
+card6,debit or credit,30,0,0.0
+card6,charge card,15,0,0.0

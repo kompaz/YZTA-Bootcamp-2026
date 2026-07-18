@@ -1,0 +1,16 @@
+feature,R_emaildomain,transaction_count,fraud_count,fraud_rate
+R_emaildomain,__MISSING__,453249,9436,0.02081857875031164
+R_emaildomain,gmail.com,57147,6811,0.11918385917021015
+R_emaildomain,hotmail.com,27509,2140,0.07779272238176596
+R_emaildomain,anonymous.com,20529,598,0.02912952408787569
+R_emaildomain,yahoo.com,11842,610,0.05151156899172437
+R_emaildomain,aol.com,3701,129,0.03485544447446636
+R_emaildomain,outlook.com,2507,414,0.1651376146788991
+R_emaildomain,comcast.net,1812,21,0.011589403973509934
+R_emaildomain,yahoo.com.mx,1508,16,0.010610079575596816
+R_emaildomain,icloud.com,1398,180,0.12875536480686695
+R_emaildomain,msn.com,852,1,0.0011737089201877935
+R_emaildomain,live.com,762,38,0.049868766404199474
+R_emaildomain,live.com.mx,754,44,0.058355437665782495
+R_emaildomain,verizon.net,620,0,0.0
+R_emaildomain,me.com,556,11,0.019784172661870502

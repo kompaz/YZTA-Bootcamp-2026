@@ -4,8 +4,10 @@ __pycache__/
 
 data/raw/
 data/processed/
-models/*.pkl
-models/*.joblib
+# Eğitilmiş model dosyaları
+models/**/*.cbm
+models/**/*.pkl
+models/**/*.joblib
 
 .env
 kaggle.json

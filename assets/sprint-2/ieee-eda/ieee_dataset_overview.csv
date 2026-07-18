@@ -1,0 +1,11 @@
+Metrik,Değer
+Train transaction satır,590540.0
+Train transaction kolon,394.0
+Birleşik train satır,590540.0
+Birleşik train kolon,435.0
+Normal işlem,569877.0
+Fraud işlem,20663.0
+Fraud oranı,0.03499000914417313
+Normal/Fraud oranı,27.579586700866283
+Duplicate satır,0.0
+Identity kapsama oranı,0.2442391709283029

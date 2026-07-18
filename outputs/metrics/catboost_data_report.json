@@ -1,0 +1,22 @@
+{
+  "rows": 590540,
+  "feature_count": 423,
+  "categorical_feature_count": 42,
+  "numeric_feature_count": 381,
+  "fraud_count": 20663,
+  "normal_count": 569877,
+  "fraud_ratio": 0.03499000914417313,
+  "high_missing_threshold": 0.98,
+  "high_missing_dropped_columns": [
+    "id_07",
+    "id_08",
+    "id_21",
+    "id_22",
+    "id_23",
+    "id_24",
+    "id_25",
+    "id_26",
+    "id_27"
+  ],
+  "constant_dropped_columns": []
+}

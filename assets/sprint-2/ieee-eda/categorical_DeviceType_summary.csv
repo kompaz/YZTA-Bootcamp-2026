@@ -1,0 +1,4 @@
+feature,DeviceType,transaction_count,fraud_count,fraud_rate
+DeviceType,__MISSING__,449730,9452,0.021017054677250794
+DeviceType,desktop,85165,5554,0.06521458345564493
+DeviceType,mobile,55645,5657,0.10166232365890916

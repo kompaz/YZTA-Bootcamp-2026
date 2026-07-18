@@ -1,0 +1,4 @@
+feature,M1,transaction_count,fraud_count,fraud_rate
+M1,T,319415,6342,0.01985504750872689
+M1,__MISSING__,271100,14321,0.05282552563629657
+M1,F,25,0,0.0

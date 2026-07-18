@@ -1,0 +1,205 @@
+{
+  "dataset": "IEEE-CIS Fraud Detection",
+  "train_transaction_shape": [
+    590540,
+    394
+  ],
+  "merged_train_shape": [
+    590540,
+    436
+  ],
+  "normal_transactions": 569877,
+  "fraud_transactions": 20663,
+  "fraud_ratio": 0.03499000914417313,
+  "normal_to_fraud_ratio": 27.579586700866283,
+  "duplicate_rows": 0,
+  "identity_coverage_ratio": 0.2442391709283029,
+  "columns_without_missing": 21,
+  "columns_over_50_percent_missing": 214,
+  "columns_over_90_percent_missing": 12,
+  "constant_columns": [],
+  "top_missing_columns": [
+    {
+      "column": "id_24",
+      "missing_ratio": 0.9919615944728554,
+      "unique_count": 12
+    },
+    {
+      "column": "id_25",
+      "missing_ratio": 0.9913096487960172,
+      "unique_count": 341
+    },
+    {
+      "column": "id_07",
+      "missing_ratio": 0.9912707013919464,
+      "unique_count": 84
+    },
+    {
+      "column": "id_08",
+      "missing_ratio": 0.9912707013919464,
+      "unique_count": 94
+    },
+    {
+      "column": "id_21",
+      "missing_ratio": 0.9912639279303688,
+      "unique_count": 490
+    },
+    {
+      "column": "id_26",
+      "missing_ratio": 0.9912571544687913,
+      "unique_count": 95
+    },
+    {
+      "column": "id_27",
+      "missing_ratio": 0.9912469942764249,
+      "unique_count": 2
+    },
+    {
+      "column": "id_23",
+      "missing_ratio": 0.9912469942764249,
+      "unique_count": 3
+    },
+    {
+      "column": "id_22",
+      "missing_ratio": 0.9912469942764249,
+      "unique_count": 25
+    },
+    {
+      "column": "dist2",
+      "missing_ratio": 0.9362837403054831,
+      "unique_count": 1751
+    },
+    {
+      "column": "D7",
+      "missing_ratio": 0.9340992989467267,
+      "unique_count": 597
+    },
+    {
+      "column": "id_18",
+      "missing_ratio": 0.9236072069631185,
+      "unique_count": 18
+    },
+    {
+      "column": "D13",
+      "missing_ratio": 0.8950926270870728,
+      "unique_count": 577
+    },
+    {
+      "column": "D14",
+      "missing_ratio": 0.8946946862193924,
+      "unique_count": 802
+    },
+    {
+      "column": "D12",
+      "missing_ratio": 0.8904104717715988,
+      "unique_count": 635
+    },
+    {
+      "column": "id_04",
+      "missing_ratio": 0.8876892335828225,
+      "unique_count": 15
+    },
+    {
+      "column": "id_03",
+      "missing_ratio": 0.8876892335828225,
+      "unique_count": 24
+    },
+    {
+      "column": "D6",
+      "missing_ratio": 0.8760676668811597,
+      "unique_count": 829
+    },
+    {
+      "column": "id_33",
+      "missing_ratio": 0.8758949436109323,
+      "unique_count": 260
+    },
+    {
+      "column": "id_09",
+      "missing_ratio": 0.8731229044603245,
+      "unique_count": 46
+    }
+  ],
+  "top_numeric_target_correlations": [
+    {
+      "feature": "V257",
+      "correlation_with_isFraud": 0.3738062096729803
+    },
+    {
+      "feature": "V244",
+      "correlation_with_isFraud": 0.35561340412622333
+    },
+    {
+      "feature": "V246",
+      "correlation_with_isFraud": 0.3545388573676178
+    },
+    {
+      "feature": "V242",
+      "correlation_with_isFraud": 0.35321556871746584
+    },
+    {
+      "feature": "V201",
+      "correlation_with_isFraud": 0.3218688475382281
+    },
+    {
+      "feature": "V200",
+      "correlation_with_isFraud": 0.3092984762326998
+    },
+    {
+      "feature": "V189",
+      "correlation_with_isFraud": 0.3002639357400451
+    },
+    {
+      "feature": "V258",
+      "correlation_with_isFraud": 0.29464103329596675
+    },
+    {
+      "feature": "V188",
+      "correlation_with_isFraud": 0.2910972291750683
+    },
+    {
+      "feature": "V158",
+      "correlation_with_isFraud": 0.2841145487680294
+    },
+    {
+      "feature": "V45",
+      "correlation_with_isFraud": 0.2816030277058505
+    },
+    {
+      "feature": "V149",
+      "correlation_with_isFraud": 0.27762643076130294
+    },
+    {
+      "feature": "V156",
+      "correlation_with_isFraud": 0.27730491623260617
+    },
+    {
+      "feature": "V228",
+      "correlation_with_isFraud": 0.2602094611378672
+    },
+    {
+      "feature": "V44",
+      "correlation_with_isFraud": 0.25856879821755
+    },
+    {
+      "feature": "V86",
+      "correlation_with_isFraud": 0.2539990380112593
+    },
+    {
+      "feature": "V170",
+      "correlation_with_isFraud": 0.253587165626236
+    },
+    {
+      "feature": "V87",
+      "correlation_with_isFraud": 0.25228766606013675
+    },
+    {
+      "feature": "V147",
+      "correlation_with_isFraud": 0.2514479392446498
+    },
+    {
+      "feature": "V52",
+      "correlation_with_isFraud": 0.24573386928628121
+    }
+  ]
+}

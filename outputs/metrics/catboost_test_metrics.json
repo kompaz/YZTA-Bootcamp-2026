@@ -1,0 +1,21 @@
+{
+  "threshold": 0.38616161616161615,
+  "precision": 0.40224428139835994,
+  "recall": 0.9022265246853823,
+  "f1": 0.5564179104477612,
+  "roc_auc": 0.9757246456494497,
+  "pr_auc": 0.8549840427072455,
+  "tn": 81327,
+  "fp": 4155,
+  "fn": 303,
+  "tp": 2796,
+  "positive_prediction_rate": 0.07847055237579165,
+  "model": "CatBoostClassifier",
+  "device": "GPU",
+  "training_seconds": 180.82774749999953,
+  "test_inference_seconds": 0.2820945000003121,
+  "test_rows": 88581,
+  "inference_seconds_per_10k": 0.0318459376164541,
+  "best_iteration": 1442,
+  "selection_reason": "Recall >= 0.90 şartını sağlayan threshold'lar arasında en yüksek F1"
+}
