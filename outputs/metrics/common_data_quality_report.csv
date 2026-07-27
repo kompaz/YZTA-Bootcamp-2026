@@ -1,0 +1,7 @@
+metric,value
+row_count,590540.0
+column_count,434.0
+duplicate_row_count,0.0
+fraud_count,20663.0
+normal_count,569877.0
+fraud_ratio,0.03499000914417313

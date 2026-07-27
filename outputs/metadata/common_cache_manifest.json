@@ -1,0 +1,18 @@
+{
+  "cache_version": "cache_v1",
+  "quick_mode": false,
+  "profiles": {
+    "common": {
+      "base": "data\\processed\\common\\common_feature_base.parquet",
+      "split": "outputs\\splits\\common_split_indices.npz",
+      "labels": "outputs\\splits\\common_split_targets_ids.npz",
+      "schema": "outputs\\metadata\\common_feature_schema.json"
+    }
+  },
+  "profile_aliases": {
+    "xgboost": "sklearn_tree",
+    "decision_tree": "sklearn_tree",
+    "random_forest": "sklearn_tree",
+    "logistic_regression": "linear"
+  }
+}
