@@ -7,6 +7,23 @@
       "split": "outputs\\splits\\common_split_indices.npz",
       "labels": "outputs\\splits\\common_split_targets_ids.npz",
       "schema": "outputs\\metadata\\common_feature_schema.json"
+    },
+    "linear": {
+      "train": "data\\processed\\linear\\X_train.npz",
+      "validation": "data\\processed\\linear\\X_validation.npz",
+      "test": "data\\processed\\linear\\X_test.npz",
+      "preprocessor": "data\\processed\\linear\\preprocessor.joblib"
+    },
+    "sklearn_tree": {
+      "train": "data\\processed\\sklearn_tree\\X_train.npz",
+      "validation": "data\\processed\\sklearn_tree\\X_validation.npz",
+      "test": "data\\processed\\sklearn_tree\\X_test.npz",
+      "preprocessor": "data\\processed\\sklearn_tree\\preprocessor.joblib"
+    },
+    "lightgbm": {
+      "train": "data\\processed\\lightgbm\\train.parquet",
+      "validation": "data\\processed\\lightgbm\\validation.parquet",
+      "test": "data\\processed\\lightgbm\\test.parquet"
     }
   },
   "profile_aliases": {

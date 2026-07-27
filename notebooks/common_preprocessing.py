@@ -780,6 +780,7 @@ def get_or_create_profile_cache(
     *,
     quick_mode: bool = False,
     force_rebuild: bool = False,
+    include_test: bool = True,
 ) -> dict[str, Any]:
     """İstenen profil cache'ini yükler; yoksa ortak tabandan bir kez üretir.
 
@@ -834,11 +835,13 @@ def get_or_create_profile_cache(
             canonical_profile,
             paths.root,
             quick_mode=quick_mode,
+            include_test=include_test,
         )
     return load_native_profile(
         canonical_profile,
         paths.root,
         quick_mode=quick_mode,
+        include_test=include_test,
     )
 
 
@@ -866,6 +869,7 @@ def load_sparse_profile(
     project_root: Path | None = None,
     *,
     quick_mode: bool = False,
+    include_test: bool = True,
 ) -> dict[str, Any]:
     """Linear/tree/XGBoost cache'ini model notebookuna yükler."""
     paths, manifest = load_cache_manifest(project_root, quick_mode=quick_mode)
@@ -875,18 +879,24 @@ def load_sparse_profile(
     entries = manifest["profiles"][alias]
     labels_entry = manifest["profiles"]["common"]["labels"]
     labels = np.load(paths.root / labels_entry)
-    return {
+    loaded = {
         "X_train": sparse.load_npz(paths.root / entries["train"]),
         "X_validation": sparse.load_npz(paths.root / entries["validation"]),
-        "X_test": sparse.load_npz(paths.root / entries["test"]),
         "y_train": labels["y_train"],
         "y_validation": labels["y_validation"],
-        "y_test": labels["y_test"],
         "id_train": labels["id_train"],
         "id_validation": labels["id_validation"],
-        "id_test": labels["id_test"],
         "preprocessor": joblib.load(paths.root / entries["preprocessor"]),
     }
+    if include_test:
+        loaded.update(
+            {
+                "X_test": sparse.load_npz(paths.root / entries["test"]),
+                "y_test": labels["y_test"],
+                "id_test": labels["id_test"],
+            }
+        )
+    return loaded
 
 
 def load_native_profile(
@@ -894,6 +904,7 @@ def load_native_profile(
     project_root: Path | None = None,
     *,
     quick_mode: bool = False,
+    include_test: bool = True,
 ) -> dict[str, Any]:
     """LightGBM/CatBoost Parquet cache'ini model notebookuna yükler."""
     if profile not in {"lightgbm", "catboost"}:
@@ -902,14 +913,20 @@ def load_native_profile(
     entries = manifest["profiles"][profile]
     labels_entry = manifest["profiles"]["common"]["labels"]
     labels = np.load(paths.root / labels_entry)
-    return {
+    loaded = {
         "X_train": pd.read_parquet(paths.root / entries["train"]),
         "X_validation": pd.read_parquet(paths.root / entries["validation"]),
-        "X_test": pd.read_parquet(paths.root / entries["test"]),
         "y_train": labels["y_train"],
         "y_validation": labels["y_validation"],
-        "y_test": labels["y_test"],
         "id_train": labels["id_train"],
         "id_validation": labels["id_validation"],
-        "id_test": labels["id_test"],
     }
+    if include_test:
+        loaded.update(
+            {
+                "X_test": pd.read_parquet(paths.root / entries["test"]),
+                "y_test": labels["y_test"],
+                "id_test": labels["id_test"],
+            }
+        )
+    return loaded
