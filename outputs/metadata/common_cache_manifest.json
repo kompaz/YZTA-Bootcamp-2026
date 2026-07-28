@@ -24,6 +24,11 @@
       "train": "data\\processed\\lightgbm\\train.parquet",
       "validation": "data\\processed\\lightgbm\\validation.parquet",
       "test": "data\\processed\\lightgbm\\test.parquet"
+    },
+    "catboost": {
+      "train": "data\\processed\\catboost\\train.parquet",
+      "validation": "data\\processed\\catboost\\validation.parquet",
+      "test": "data\\processed\\catboost\\test.parquet"
     }
   },
   "profile_aliases": {
