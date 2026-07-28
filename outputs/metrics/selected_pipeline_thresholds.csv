@@ -1,0 +1,3 @@
+role,model_name,probability_column,selected_threshold,precision,recall,f1,routed_rate,selection_reason
+light,LogisticRegression,logistic_regression_probability,0.28669347624897124,0.07136645009464368,0.9,0.13224629094184007,0.4413361781871959,Recall >= 0.90 ile minimum routed rate
+heavy,HeavyCatBoost,heavy_catboost_probability,0.43044569199086985,0.3856787392867017,0.9,0.5399651635378363,0.0816653684198643,Recall >= 0.90 şartında maksimum F1
