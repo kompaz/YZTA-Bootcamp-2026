@@ -169,13 +169,12 @@ Sprint 3 sonunda ortak split, preprocessing pipeline, hafif ve ağır model kar�
 
 Final video çekimi ve YouTube bağlantısının eklenmesi teslim öncesinde tamamlanacak işler olarak bırakılmıştır.
 
-Sprint board ekran görüntüsü aşağıdaki konuma eklenecektir:
+Sprint board ekran görüntüsü aşağıdaki konuma mevcuttur:
 
 ```text
 assets/sprint-3/sprint_board.png
 ```
 
-Ekran görüntüsü repository’ye eklendikten sonra bu bölüme bağlanacaktır.
 
 ---
 

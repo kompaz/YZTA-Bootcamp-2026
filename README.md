@@ -179,13 +179,11 @@ Done
 
 Sprint board üzerinde görevler bu kolonlar arasında ilerletilecektir. Her görev başlangıçta Backlog veya To Do kolonunda yer alacak, geliştirme sürecine alındığında In Progress kolonuna taşınacak, kontrol bekleyen işler Review kolonunda tutulacak ve tamamlanan işler Done kolonuna aktarılacaktır.
 
-Sprint board ekran görüntüsü aşağıdaki klasöre eklenecektir:
+Sprint board ekran görüntüsü aşağıdaki klasöre mevcuttur:
 
 ```text
 assets/sprint-1/sprint_board.png
 ```
-
-Sprint board ekran görüntüsü eklendikten sonra aşağıdaki bağlantı aktif hale gelecektir:
 
 ![Sprint Board](/assets/sprint-1/sprint_board.png)
 
@@ -595,7 +593,7 @@ Sprint 2 sonunda IEEE-CIS EDA, bireysel model eğitimleri, threshold analizi ve 
 
 Ortak split, ortak preprocessing, nihai model seçimi, final pipeline ve dashboard entegrasyonu sonraki sprint çalışmalarına aktarılmıştır.
 
-Sprint 2 board ekran görüntüsü aşağıdaki konuma eklenebilir:
+Sprint 2 board ekran görüntüsü aşağıdaki konumda mevcuttur:
 
 ```text
 assets/sprint-2/sprint_board.png
@@ -1007,13 +1005,13 @@ Sprint 3 sonunda ortak split, preprocessing pipeline, hafif ve ağır model kar�
 
 Final video çekimi ve YouTube bağlantısının eklenmesi teslim öncesinde tamamlanacak işler olarak bırakılmıştır.
 
-Sprint board ekran görüntüsü aşağıdaki konuma eklenecektir:
+Sprint board ekran görüntüsü aşağıdaki konumda mevcuttur:
 
 ```text
 assets/sprint-3/sprint_board.png
 ```
 
-Ekran görüntüsü repository’ye eklendikten sonra bu bölüme bağlanacaktır.
+![Sprint Board](/assets/sprint-3/sprint_board.png)
 
 ---
 
