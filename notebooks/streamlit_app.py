@@ -5,16 +5,16 @@ from __future__ import annotations
 import io
 import html
 import json
+import os
 import time
 from pathlib import Path
 from typing import Any
 
-import joblib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import requests
 import streamlit as st
-from catboost import Pool
 
 
 APP_DIR = Path(__file__).resolve().parent
@@ -30,7 +30,14 @@ FINAL_PREDICTIONS_PATH = (
 )
 TARGET_COLUMN = "isFraud"
 ID_COLUMN = "TransactionID"
-PREDICTION_CHUNK_SIZE = 10_000
+API_CHUNK_SIZE = int(os.getenv("ECOSHIELD_API_CHUNK_SIZE", "1000"))
+API_BASE_URL = os.getenv("ECOSHIELD_API_URL", "http://127.0.0.1:8000").rstrip("/")
+API_TIMEOUT_SECONDS = float(os.getenv("ECOSHIELD_API_TIMEOUT", "120"))
+
+
+def project_path(entry: str) -> Path:
+    """Resolve manifest paths written on either Windows or POSIX."""
+    return PROJECT_ROOT / Path(entry.replace("\\", "/"))
 
 
 st.set_page_config(
@@ -154,12 +161,31 @@ def _require_file(path: Path, explanation: str) -> None:
         st.stop()
 
 
-@st.cache_resource(show_spinner="D8 Balanced modeli yükleniyor...")
+def api_request(method: str, endpoint: str, **kwargs: Any) -> dict[str, Any]:
+    """Call the model API and expose a readable error to the UI."""
+    try:
+        response = requests.request(
+            method,
+            f"{API_BASE_URL}{endpoint}",
+            timeout=API_TIMEOUT_SECONDS,
+            **kwargs,
+        )
+    except requests.RequestException as error:
+        raise ConnectionError(
+            f"EcoShield API'ye ulaşılamadı: {API_BASE_URL}. "
+            "Önce FastAPI servisini başlatın."
+        ) from error
+    if not response.ok:
+        try:
+            detail = response.json().get("detail", response.text)
+        except ValueError:
+            detail = response.text
+        raise RuntimeError(f"API hatası ({response.status_code}): {detail}")
+    return response.json()
+
+
+@st.cache_resource(show_spinner="EcoShield API ve feature şeması kontrol ediliyor...")
 def load_runtime_artifacts() -> dict[str, Any]:
-    _require_file(
-        MODEL_PATH,
-        "Optimize edilmiş model bulunamadı. Önce Görev 6'yı çalıştırın.",
-    )
     _require_file(
         SELECTION_PATH,
         "Seçilmiş model metadata dosyası bulunamadı.",
@@ -175,7 +201,7 @@ def load_runtime_artifacts() -> dict[str, Any]:
     schema_entry = common_entries.get("schema")
     if not schema_entry:
         raise KeyError("Manifest içinde common/schema kaydı bulunamadı.")
-    schema_path = PROJECT_ROOT / schema_entry
+    schema_path = project_path(schema_entry)
     if not schema_path.exists():
         raise FileNotFoundError(f"Feature şeması bulunamadı: {schema_path}")
     with schema_path.open(encoding="utf-8") as file:
@@ -188,35 +214,35 @@ def load_runtime_artifacts() -> dict[str, Any]:
             f"{selection['trial_name']} bulundu."
         )
 
-    model = joblib.load(MODEL_PATH)
     feature_columns = list(schema["feature_columns"])
     numeric_columns = list(schema["numeric_columns"])
     categorical_columns = list(schema["categorical_columns"])
-    categorical_indices = [
-        feature_columns.index(column) for column in categorical_columns
-    ]
     test_entry = manifest.get("profiles", {}).get("catboost", {}).get("test")
     test_cache_path = (
-        PROJECT_ROOT / test_entry
+        project_path(test_entry)
         if test_entry
         else PROJECT_ROOT / "data" / "processed" / "catboost" / "test.parquet"
     )
 
-    model_features = list(getattr(model, "feature_names_", []) or [])
-    if model_features and model_features != feature_columns:
-        raise ValueError("Model feature sırası ile ortak feature şeması uyuşmuyor.")
+    api_info = api_request("GET", "/model-info")
+    if api_info.get("model") != "cat_d8_balanced":
+        raise ValueError("API beklenen cat_d8_balanced modelini sunmuyor.")
+    if int(api_info.get("feature_count", -1)) != len(feature_columns):
+        raise ValueError("API feature sayısı ile ortak feature şeması uyuşmuyor.")
+    if not np.isclose(float(api_info["threshold"]), float(selection["threshold"])):
+        raise ValueError("API threshold değeri ile seçilmiş threshold uyuşmuyor.")
 
     return {
-        "model": model,
-        "threshold": float(selection["threshold"]),
+        "threshold": float(api_info["threshold"]),
         "selection": selection.to_dict(),
         "feature_columns": feature_columns,
         "numeric_columns": numeric_columns,
         "categorical_columns": categorical_columns,
-        "categorical_indices": categorical_indices,
         "schema_path": schema_path,
         "test_cache_path": test_cache_path,
         "manifest": manifest,
+        "api_info": api_info,
+        "api_url": API_BASE_URL,
     }
 
 
@@ -293,75 +319,48 @@ def merge_transaction_identity(
     )
 
 
-def prepare_model_frame(
+def frame_to_api_records(frame: pd.DataFrame) -> list[dict[str, Any]]:
+    """Convert pandas and NumPy scalar values to JSON-safe Python values."""
+    records: list[dict[str, Any]] = []
+    for record in frame.to_dict(orient="records"):
+        records.append({key: _json_safe(value) for key, value in record.items()})
+    return records
+
+
+def predict_with_api(
     raw_frame: pd.DataFrame,
-    artifacts: dict[str, Any],
-) -> tuple[pd.DataFrame, pd.Series, dict[str, Any]]:
+) -> tuple[pd.DataFrame, dict[str, Any], float]:
     if raw_frame.empty:
         raise ValueError("Tahmin girdisi boş.")
-
-    frame = raw_frame.copy()
-    if frame.columns.duplicated().any():
-        duplicates = frame.columns[frame.columns.duplicated()].tolist()
+    if raw_frame.columns.duplicated().any():
+        duplicates = raw_frame.columns[raw_frame.columns.duplicated()].tolist()
         raise ValueError(f"Tekrar eden kolon adları: {duplicates[:20]}")
+    raw_frame = raw_frame.copy()
+    if ID_COLUMN in raw_frame and raw_frame[ID_COLUMN].dropna().duplicated().any():
+        raise ValueError("Girdi içinde tekrar eden TransactionID var.")
+    if ID_COLUMN not in raw_frame:
+        raw_frame.insert(0, ID_COLUMN, np.arange(1, len(raw_frame) + 1))
 
-    target_was_removed = TARGET_COLUMN in frame.columns
-    if target_was_removed:
-        frame = frame.drop(columns=TARGET_COLUMN)
-
-    if ID_COLUMN in frame.columns:
-        transaction_ids = frame[ID_COLUMN].copy()
-        if transaction_ids.duplicated().any():
-            raise ValueError("Girdi içinde tekrar eden TransactionID var.")
-    else:
-        transaction_ids = pd.Series(
-            np.arange(1, len(frame) + 1),
-            name=ID_COLUMN,
-        )
-
-    feature_columns = artifacts["feature_columns"]
-    missing_columns = [column for column in feature_columns if column not in frame]
-    extra_columns = [
-        column
-        for column in frame.columns
-        if column not in feature_columns and column != ID_COLUMN
-    ]
-    for column in missing_columns:
-        frame[column] = np.nan
-    frame = frame.loc[:, feature_columns].copy()
-
-    for column in artifacts["numeric_columns"]:
-        frame[column] = pd.to_numeric(frame[column], errors="coerce")
-    for column in artifacts["categorical_columns"]:
-        frame[column] = frame[column].astype("string").fillna("__MISSING__")
-
-    report = {
-        "row_count": len(frame),
-        "required_feature_count": len(feature_columns),
-        "provided_feature_count": len(feature_columns) - len(missing_columns),
-        "missing_feature_count": len(missing_columns),
-        "missing_features": missing_columns,
-        "ignored_extra_columns": extra_columns,
-        "target_was_removed": target_was_removed,
-    }
-    return frame, transaction_ids.reset_index(drop=True), report
-
-
-def predict_in_chunks(
-    prepared_frame: pd.DataFrame,
-    model: Any,
-) -> tuple[np.ndarray, float]:
-    row_count = len(prepared_frame)
-    probabilities = np.empty(row_count, dtype=np.float64)
-    progress = st.progress(0.0, text="Tahmin hazırlanıyor...")
+    row_count = len(raw_frame)
+    progress = st.progress(0.0, text="API tahmini hazırlanıyor...")
     status = st.empty()
+    results: list[dict[str, Any]] = []
+    report: dict[str, Any] | None = None
+    api_inference_seconds = 0.0
     started = time.perf_counter()
 
-    for start in range(0, row_count, PREDICTION_CHUNK_SIZE):
-        end = min(start + PREDICTION_CHUNK_SIZE, row_count)
-        probabilities[start:end] = model.predict_proba(
-            prepared_frame.iloc[start:end]
-        )[:, 1]
+    for start in range(0, row_count, API_CHUNK_SIZE):
+        end = min(start + API_CHUNK_SIZE, row_count)
+        response = api_request(
+            "POST",
+            "/predict",
+            json={"records": frame_to_api_records(raw_frame.iloc[start:end])},
+        )
+        results.extend(response["results"])
+        api_inference_seconds += float(response["inference_seconds"])
+        if report is None:
+            report = response["input_report"]
+            report["row_count"] = row_count
         processed = end
         elapsed = time.perf_counter() - started
         rate = processed / elapsed if elapsed > 0 else 0.0
@@ -369,31 +368,22 @@ def predict_in_chunks(
         eta = remaining / rate if rate > 0 else 0.0
         progress.progress(
             processed / row_count,
-            text=f"İlerleme: {processed:,}/{row_count:,} (%{100 * processed / row_count:.1f})",
+            text=(
+                f"API ilerleme: {processed:,}/{row_count:,} "
+                f"(%{100 * processed / row_count:.1f})"
+            ),
         )
         status.caption(
             f"Geçen süre: {elapsed:.1f} sn · Hız: {rate:,.0f} satır/sn · ETA: {eta:.1f} sn"
         )
 
-    elapsed = time.perf_counter() - started
+    total_elapsed = time.perf_counter() - started
     progress.empty()
     status.empty()
-    return probabilities, elapsed
-
-
-def build_prediction_output(
-    transaction_ids: pd.Series,
-    probabilities: np.ndarray,
-    threshold: float,
-) -> pd.DataFrame:
-    predictions = (probabilities >= threshold).astype(np.int8)
-    return pd.DataFrame({
-        ID_COLUMN: transaction_ids.to_numpy(),
-        "fraud_probability": probabilities,
-        "decision_threshold": threshold,
-        "fraud_prediction": predictions,
-        "decision": np.where(predictions == 1, "Fraud", "Normal"),
-    })
+    if report is None:
+        raise RuntimeError("API geçerli bir input raporu döndürmedi.")
+    report["api_inference_seconds"] = api_inference_seconds
+    return pd.DataFrame(results), report, total_elapsed
 
 
 def show_input_report(report: dict[str, Any]) -> None:
@@ -435,7 +425,7 @@ def render_single_result(
         ("Karar", decision, "Sabit validation eşiğiyle"),
         ("Fraud olasılığı", f"%{probability * 100:.2f}", "Model skoru"),
         ("Risk seviyesi", f"{icon} {label}", "Arayüz segmentasyonu"),
-        ("Inference", f"{elapsed * 1000:.1f} ms", "Yerel model"),
+        ("Toplam yanıt", f"{elapsed * 1000:.1f} ms", "FastAPI + model"),
     ]
     for column, (title, value, note) in zip(cards, values):
         column.markdown(
@@ -500,35 +490,22 @@ def render_output_table(output: pd.DataFrame) -> None:
 
 def run_prediction(raw_frame: pd.DataFrame, artifacts: dict[str, Any]) -> None:
     try:
-        prepared, transaction_ids, report = prepare_model_frame(
-            raw_frame, artifacts
-        )
+        output, report, elapsed = predict_with_api(raw_frame)
         show_input_report(report)
-        if report["provided_feature_count"] == 0:
-            st.error("Model şemasındaki hiçbir özellik sağlanmadı.")
-            return
         if report["missing_feature_count"] > 0:
             st.warning(
                 "Eksik özellikler NaN/__MISSING__ olarak işlendi. "
                 "Çok sayıda eksik özellik tahmin güvenilirliğini azaltabilir."
             )
-
-        probabilities, elapsed = predict_in_chunks(
-            prepared, artifacts["model"]
-        )
-        output = build_prediction_output(
-            transaction_ids,
-            probabilities,
-            artifacts["threshold"],
-        )
     except Exception as error:
         st.exception(error)
         return
 
     st.session_state.last_output = output
     st.session_state.last_elapsed = elapsed
-    st.session_state.last_prepared = (
-        prepared.iloc[[0]].copy() if len(prepared) == 1 else None
+    st.session_state.last_record = (
+        frame_to_api_records(raw_frame.iloc[[0]])[0]
+        if len(raw_frame) == 1 else None
     )
     st.session_state.last_shap = None
 
@@ -545,32 +522,15 @@ def run_prediction(raw_frame: pd.DataFrame, artifacts: dict[str, Any]) -> None:
 
 
 def compute_shap_explanation(
-    prepared_row: pd.DataFrame,
-    artifacts: dict[str, Any],
+    record: dict[str, Any],
+    top_n: int,
 ) -> tuple[pd.DataFrame, float]:
-    pool = Pool(
-        prepared_row,
-        cat_features=artifacts["categorical_indices"],
+    response = api_request(
+        "POST",
+        "/explain",
+        json={"record": record, "top_n": top_n},
     )
-    shap_values = artifacts["model"].get_feature_importance(
-        pool,
-        type="ShapValues",
-    )
-    contributions = shap_values[0, :-1]
-    table = pd.DataFrame({
-        "feature": artifacts["feature_columns"],
-        "value": [
-            _json_safe(value) for value in prepared_row.iloc[0].tolist()
-        ],
-        "shap_value": contributions,
-        "absolute_contribution": np.abs(contributions),
-    }).sort_values("absolute_contribution", ascending=False)
-    table["direction"] = np.where(
-        table["shap_value"] >= 0,
-        "Riski artırıyor",
-        "Riski azaltıyor",
-    )
-    return table.reset_index(drop=True), float(shap_values[0, -1])
+    return pd.DataFrame(response["features"]), float(response["base_value"])
 
 
 def render_explainability(artifacts: dict[str, Any]) -> None:
@@ -579,14 +539,15 @@ def render_explainability(artifacts: dict[str, Any]) -> None:
         "CatBoost SHAP katkıları son tek işlem tahmininde model skorunu hangi "
         "özelliklerin artırıp azalttığını gösterir. Değerler log-odds katkısıdır."
     )
-    prepared = st.session_state.get("last_prepared")
-    if prepared is None:
+    record = st.session_state.get("last_record")
+    if record is None:
         st.info("Açıklama görmek için önce Tahmin sekmesinde tek işlem tahmini yapın.")
         return
     if st.session_state.get("last_shap") is None:
         with st.spinner("SHAP katkıları hesaplanıyor..."):
             st.session_state.last_shap = compute_shap_explanation(
-                prepared, artifacts
+                record,
+                len(artifacts["feature_columns"]),
             )
     table, base_value = st.session_state.last_shap
     top = table.head(12).sort_values("shap_value")
@@ -678,6 +639,7 @@ def render_performance_tab(artifacts: dict[str, Any]) -> None:
         ),
         "feature_count": len(artifacts["feature_columns"]),
         "model_path": str(MODEL_PATH.relative_to(PROJECT_ROOT)),
+        "inference_api": artifacts["api_url"],
     })
 
 
@@ -712,13 +674,13 @@ def load_demo_payload(label: str) -> None:
         ensure_ascii=False,
         indent=2,
     )
-    for key in ("last_output", "last_elapsed", "last_prepared", "last_shap"):
+    for key in ("last_output", "last_elapsed", "last_record", "last_shap"):
         st.session_state.pop(key, None)
 
 
 def clear_session() -> None:
     st.session_state.single_payload = default_single_payload
-    for key in ("last_output", "last_elapsed", "last_prepared", "last_shap"):
+    for key in ("last_output", "last_elapsed", "last_record", "last_shap"):
         st.session_state.pop(key, None)
 
 
@@ -727,7 +689,8 @@ with st.sidebar:
     st.caption("IEEE-CIS Fraud Detection · Karar destek prototipi")
     st.divider()
     st.subheader("🟢 Sistem durumu")
-    st.success("Model hazır · yerel inference")
+    st.success("FastAPI bağlı · model hazır")
+    st.caption(runtime["api_url"])
     st.write("**CatBoost D8 Balanced**")
     st.metric("Sabit threshold", f"{runtime['threshold']:.6f}")
     st.caption(
@@ -758,7 +721,7 @@ with st.sidebar:
         "Bu uygulama karar destek prototipidir. "
         "Tahminler otomatik finansal karar yerine inceleme sinyali olarak kullanılmalıdır."
     )
-    st.caption("Arayüz sürümü: 2.0")
+    st.caption("Arayüz sürümü: 3.0 · FastAPI serving")
 
 st.markdown(
     """<div class="eco-hero">
@@ -861,13 +824,13 @@ with performance_tab:
 Transaction CSV + Identity CSV
             │  TransactionID left join
             ▼
-Ortak feature şeması (423 özellik)
-            │  train-fit preprocessing / CatBoost profili
+Streamlit kullanıcı arayüzü
+            │  HTTP / JSON
             ▼
-CatBoost D8 Balanced model
-            │  predict_proba
+FastAPI inference servisi
+            │  Feature şeması ve tip dönüşümleri
             ▼
-Validation'da sabitlenen threshold (0.400815)
+CatBoost D8 Balanced + sabit threshold
             │
             ├── Fraud inceleme sinyali
             ├── Toplu CSV raporu
@@ -880,7 +843,7 @@ Validation'da sabitlenen threshold (0.400815)
         st.markdown("### 🔧 Teknolojiler")
         st.write(
             "Python · pandas · NumPy · scikit-learn · CatBoost · "
-            "Streamlit · Matplotlib · Parquet"
+            "FastAPI · Streamlit · Docker · Matplotlib · Parquet"
         )
     with rationale:
         st.markdown("### 💡 Neden D8 Balanced?")

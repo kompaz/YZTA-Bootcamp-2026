@@ -1,0 +1,51 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ecoshield-api
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000
+    environment:
+      ECOSHIELD_PROJECT_ROOT: /app
+      ECOSHIELD_MAX_REQUEST_ROWS: "5000"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./models:/app/models:ro
+      - ./outputs:/app/outputs:ro
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import requests; requests.get('http://127.0.0.1:8000/health', timeout=5).raise_for_status()"
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
+    restart: unless-stopped
+
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ecoshield-streamlit
+    command: >-
+      streamlit run notebooks/streamlit_app.py
+      --server.address=0.0.0.0
+      --server.port=8501
+      --server.headless=true
+    environment:
+      ECOSHIELD_PROJECT_ROOT: /app
+      ECOSHIELD_API_URL: http://api:8000
+      ECOSHIELD_API_TIMEOUT: "120"
+      ECOSHIELD_API_CHUNK_SIZE: "1000"
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./outputs:/app/outputs:ro
+      - ./data/processed:/app/data/processed:ro
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
