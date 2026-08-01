@@ -9,5 +9,6 @@ models/**/*.cbm
 models/**/*.pkl
 models/**/*.joblib
 
+videos/*.mp4
 .env
 kaggle.json
